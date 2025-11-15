@@ -1,50 +1,29 @@
 package com.nads.aplicacionweb.sesiones.models;
 
+
 public class Producto {
-    private long idProducto;
+    private Long id;
     private String nombre;
-    private String categoria;
+    private String tipo;
     private double precio;
 
-    public Producto() {
-    }
-
-    public Producto(long idProducto, String nombre, String categoria, double precio) {
-        this.idProducto = idProducto;
+    public Producto(Long id, String nombre, String tipo, double precio) {
+        this.id = id;
         this.nombre = nombre;
-        this.categoria = categoria;
+        this.tipo = tipo;
         this.precio = precio;
     }
 
-    public long getIdProducto() {
-        return idProducto;
-    }
+    // Getters y Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setIdProducto(long idProducto) {
-        this.idProducto = idProducto;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(double precio) {
-        this.precio = precio;
-    }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
 }

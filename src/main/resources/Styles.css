@@ -1,0 +1,259 @@
+/* ========================================
+   PALETA DE COLORES: MORADO Y CELESTE
+   ======================================== */
+:root {
+    --color-morado-oscuro: #6f42c1;
+    --color-morado: #8b5cf6;
+    --color-morado-claro: #a78bfa;
+    --color-celeste: #00bcd4;
+    --color-celeste-claro: #4dd0e1;
+    --color-celeste-oscuro: #0097a7;
+}
+
+/* ========================================
+   ESTILOS GENERALES
+   ======================================== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* ========================================
+   NAVBAR - Barra de navegación
+   ======================================== */
+.navbar {
+    background: linear-gradient(90deg, var(--color-morado-oscuro) 0%, var(--color-celeste-oscuro) 100%) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   CARDS - Tarjetas
+   ======================================== */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--color-morado) 0%, var(--color-celeste) 100%);
+    color: white !important;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.5rem;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+.btn-primary {
+    background: linear-gradient(90deg, var(--color-morado) 0%, var(--color-celeste) 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, var(--color-morado-oscuro) 0%, var(--color-celeste-oscuro) 100%);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.4);
+}
+
+.btn-outline-primary {
+    color: var(--color-morado);
+    border-color: var(--color-morado);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--color-morado);
+    border-color: var(--color-morado);
+}
+
+.btn-success {
+    background-color: var(--color-celeste);
+    border-color: var(--color-celeste);
+}
+
+.btn-success:hover {
+    background-color: var(--color-celeste-oscuro);
+    border-color: var(--color-celeste-oscuro);
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table thead {
+    background: linear-gradient(90deg, var(--color-morado) 0%, var(--color-celeste) 100%);
+    color: white;
+}
+
+.table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* ========================================
+   FORMULARIOS
+   ======================================== */
+.form-control:focus {
+    border-color: var(--color-morado);
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+/* ========================================
+   CARRITO DE COMPRAS
+   ======================================== */
+.cart-icon {
+    position: relative;
+    font-size: 1.5rem;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* ========================================
+   PRODUCTO CARDS
+   ======================================== */
+.product-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.product-card:hover {
+    border-color: var(--color-morado);
+    box-shadow: 0 8px 16px rgba(111, 66, 193, 0.3);
+}
+
+/* ========================================
+   ALERTA DE BIENVENIDA
+   ======================================== */
+.welcome-alert {
+    background: linear-gradient(90deg, var(--color-celeste-claro) 0%, var(--color-morado-claro) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ========================================
+   FACTURA / INVOICE
+   ======================================== */
+.invoice-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+    border-bottom: 3px solid var(--color-morado);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.invoice-total {
+    background-color: var(--color-morado-claro);
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* ========================================
+   RESPONSIVE - Impresión
+   ======================================== */
+@media print {
+    body {
+        background: white;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+/* ========================================
+   ESTILOS PARA ICONOS DEL CARRITO
+   ======================================== */
+.cart-link {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
