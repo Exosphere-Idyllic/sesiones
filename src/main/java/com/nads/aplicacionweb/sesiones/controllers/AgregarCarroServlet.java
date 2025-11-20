@@ -1,5 +1,10 @@
 package com.nads.aplicacionweb.sesiones.controllers;
 
+import com.nads.aplicacionweb.sesiones.models.DetalleCarro;
+import com.nads.aplicacionweb.sesiones.models.ItemCarro;
+import com.nads.aplicacionweb.sesiones.models.Producto;
+import com.nads.aplicacionweb.sesiones.services.ProductoService;
+import com.nads.aplicacionweb.sesiones.services.ProductoServiceJdbcImplement;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -7,40 +12,39 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import com.nads.aplicacionweb.sesiones.models.DetalleCarro;
-import com.nads.aplicacionweb.sesiones.models.ItemCarro;
-import com.nads.aplicacionweb.sesiones.models.Producto;
-import com.nads.aplicacionweb.sesiones.services.ProductoService;
-import com.nads.aplicacionweb.sesiones.services.ProductoServiceImplement;
 import java.io.IOException;
+import java.sql.Connection;
+import java.util.Optional;
 
 /**
  * ============================================
  * SERVLET PARA AGREGAR PRODUCTOS AL CARRITO
  * ============================================
- * Descripción: Agrega productos al carrito de compras
- * Autor: Pablo Aguilar
- * Fecha: 14/11/2025
+ * Descripción: Agrega productos al carrito desde BD
+ * Autor: Sistema
+ * Fecha: 20/11/2025
  * ============================================
  */
 @WebServlet("/agregar-carro")
 public class AgregarCarroServlet extends HttpServlet {
 
-    /**
-     * Maneja las solicitudes GET para agregar productos al carrito
-     *
-     * @param req Objeto HttpServletRequest con la solicitud
-     * @param resp Objeto HttpServletResponse para la respuesta
-     * @throws ServletException Si ocurre un error en el servlet
-     * @throws IOException Si ocurre un error de entrada/salida
-     */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         try {
+            // Verificar que el usuario esté autenticado
+            HttpSession session = req.getSession(false);
+            if (session == null || session.getAttribute("username") == null) {
+                // Redirigir al login si no está autenticado
+                resp.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
+
             // Obtener los parámetros de la solicitud
             Long id = Long.parseLong(req.getParameter("id"));
 
-            // Validar y obtener la cantidad (con valor por defecto de 1)
+            // Validar y obtener la cantidad
             int cantidad = 1;
             String cantidadParam = req.getParameter("cantidad");
             if (cantidadParam != null && !cantidadParam.trim().isEmpty()) {
@@ -52,20 +56,29 @@ public class AgregarCarroServlet extends HttpServlet {
                 cantidad = 1;
             }
 
-            // Buscar el producto en el servicio
-            ProductoService productoService = new ProductoServiceImplement();
-            Producto producto = productoService.porId(id).orElse(null);
+            // Obtener la conexión desde el filtro
+            Connection conn = (Connection) req.getAttribute("conn");
 
-            // Verificar si el producto existe
-            if (producto != null) {
-                // Obtener o crear la sesión
-                HttpSession session = req.getSession();
+            // Buscar el producto en la base de datos
+            ProductoService productoService = new ProductoServiceJdbcImplement(conn);
+            Optional<Producto> productoOpt = productoService.porId(id);
+
+            if (productoOpt.isPresent()) {
+                Producto producto = productoOpt.get();
+
+                // Verificar que haya stock suficiente
+                if (producto.getStock() < cantidad) {
+                    // Stock insuficiente
+                    req.getSession().setAttribute("error",
+                            "Stock insuficiente. Solo hay " + producto.getStock() + " unidades disponibles");
+                    resp.sendRedirect(req.getContextPath() + "/products");
+                    return;
+                }
 
                 // Obtener el carrito de la sesión o crear uno nuevo
                 DetalleCarro carro = (DetalleCarro) session.getAttribute("carro");
 
                 if (carro == null) {
-                    // Si no existe el carrito, crear uno nuevo
                     carro = new DetalleCarro();
                     session.setAttribute("carro", carro);
                 }
@@ -73,20 +86,33 @@ public class AgregarCarroServlet extends HttpServlet {
                 // Crear el item del carrito con el producto y la cantidad
                 ItemCarro item = new ItemCarro(cantidad, producto);
 
-                // Agregar el item al carrito (se suman cantidades si ya existe)
+                // Agregar el item al carrito
                 carro.addItemCarro(item);
+
+                // Mensaje de éxito
+                session.setAttribute("mensaje",
+                        "Producto agregado al carrito exitosamente");
+            } else {
+                // Producto no encontrado
+                req.getSession().setAttribute("error",
+                        "Producto no encontrado");
             }
 
             // Redirigir a la vista del carrito
             resp.sendRedirect(req.getContextPath() + "/ver-carro");
 
         } catch (NumberFormatException e) {
-            // Manejar error de formato de número
+            // Error al parsear parámetros
             System.err.println("Error al parsear parámetros: " + e.getMessage());
+            req.getSession().setAttribute("error",
+                    "Parámetros inválidos");
             resp.sendRedirect(req.getContextPath() + "/products");
         } catch (Exception e) {
-            // Manejar cualquier otro error
+            // Error general
             System.err.println("Error al agregar producto al carrito: " + e.getMessage());
+            e.printStackTrace();
+            req.getSession().setAttribute("error",
+                    "Error al agregar producto al carrito");
             resp.sendRedirect(req.getContextPath() + "/products");
         }
     }

@@ -1,11 +1,11 @@
 <%--
   ============================================
-  CARRO.JSP - Carrito de compras
+  CARRO.JSP - Carrito de compras actualizado
   ============================================
   Descripción: Muestra los productos agregados al carrito
-  con opción de imprimir factura en PDF
-  Autor: Sistema
-  Fecha: 14/11/2025
+  con mensajes de éxito/error
+  Autor: Pablo Aguilar
+  Fecha: 20/11/2025
   ============================================
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -18,6 +18,14 @@
 
     // Obtener el nombre de usuario de la sesión
     String username = (String) session.getAttribute("username");
+
+    // Obtener mensajes de éxito o error
+    String mensaje = (String) session.getAttribute("mensaje");
+    String error = (String) session.getAttribute("error");
+
+    // Limpiar mensajes de la sesión
+    session.removeAttribute("mensaje");
+    session.removeAttribute("error");
 
     // Generar número de factura y fecha
     String numeroFactura = "FAC-" + System.currentTimeMillis();
@@ -38,7 +46,6 @@
     <link href="<%= request.getContextPath() %>/css/Styles.css" rel="stylesheet">
 
     <style>
-        /* Estilos específicos para la impresión */
         @media print {
             .no-print {
                 display: none !important;
@@ -54,6 +61,7 @@
     </style>
 </head>
 <body class="bg-light">
+
 <!-- Barra de navegación (no se imprime) -->
 <nav class="navbar navbar-expand-lg navbar-dark no-print">
     <div class="container">
@@ -106,6 +114,24 @@
                     </h3>
                 </div>
                 <div class="card-body">
+
+                    <!-- Mensajes de éxito o error -->
+                    <% if (mensaje != null) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <%= mensaje %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
+                    <% if (error != null) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <% } %>
+
                     <!-- Información del usuario -->
                     <% if (username != null) { %>
                     <div class="welcome-alert">
@@ -125,6 +151,7 @@
                         </a>
                     </div>
                     <% } else { %>
+
                     <!-- Información de la factura -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -142,7 +169,7 @@
                             <tr>
                                 <th><i class="bi bi-hash"></i> ID</th>
                                 <th><i class="bi bi-box"></i> Producto</th>
-                                <th><i class="bi bi-tag"></i> Tipo</th>
+                                <th><i class="bi bi-tag"></i> Categoría</th>
                                 <th class="text-end"><i class="bi bi-currency-dollar"></i> Precio</th>
                                 <th class="text-center"><i class="bi bi-123"></i> Cantidad</th>
                                 <th class="text-end"><i class="bi bi-calculator"></i> Subtotal</th>
@@ -152,8 +179,13 @@
                             <% for (ItemCarro item : detalleCarro.getItems()) { %>
                             <tr>
                                 <td><%= item.getProducto().getId() %></td>
-                                <td><strong><%= item.getProducto().getNombre() %></strong></td>
-                                <td><span class="badge bg-info"><%= item.getProducto().getTipo() %></span></td>
+                                <td><strong><%= item.getProducto().getNombreProducto() %></strong></td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <%= item.getProducto().getNombreCategoria() != null ?
+                                                item.getProducto().getNombreCategoria() : "Sin categoría" %>
+                                    </span>
+                                </td>
                                 <td class="text-end">$<%= String.format("%.2f", item.getProducto().getPrecio()) %></td>
                                 <td class="text-center">
                                     <span class="badge bg-secondary"><%= item.getCantidad() %></span>
@@ -210,42 +242,20 @@
 <!-- Bootstrap JS -->
 <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
 
-<!-- Scripts para impresión y generación de PDF -->
 <script>
-    /**
-     * Función para imprimir la factura
-     * Abre el diálogo de impresión del navegador
-     */
     function imprimirFactura() {
         window.print();
     }
 
-    /**
-     * Función para descargar la factura como PDF
-     * Utiliza la funcionalidad de impresión del navegador
-     * con la opción de "Guardar como PDF"
-     */
     function descargarPDF() {
-        // Mostrar mensaje informativo
         alert('Se abrirá el diálogo de impresión.\n\n' +
             'Para guardar como PDF:\n' +
             '1. Selecciona "Guardar como PDF" en el destino\n' +
             '2. Haz clic en "Guardar"\n' +
             '3. Elige la ubicación donde guardar el archivo');
-
-        // Abrir diálogo de impresión
         window.print();
     }
-
-    /**
-     * Evento que se ejecuta cuando se carga la página
-     * Muestra un mensaje de bienvenida si hay productos en el carrito
-     */
-    window.addEventListener('load', function() {
-        <% if (detalleCarro != null && !detalleCarro.getItems().isEmpty()) { %>
-        console.log('Carrito cargado con <%= detalleCarro.getItems().size() %> producto(s)');
-        <% } %>
-    });
 </script>
+
 </body>
 </html>

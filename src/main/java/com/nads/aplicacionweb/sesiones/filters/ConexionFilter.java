@@ -1,6 +1,5 @@
 package com.nads.aplicacionweb.sesiones.filters;
 
-import com.nads.aplicacionweb.sesiones.services.ServiceJdbcException;
 import com.nads.aplicacionweb.sesiones.util.Conexion;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;

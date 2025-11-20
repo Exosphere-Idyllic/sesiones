@@ -1,11 +1,12 @@
 package com.nads.aplicacionweb.sesiones.services;
 
-public class ServiceJdbcException extends  RuntimeException{
+public class ServiceJdbcException extends RuntimeException {
 
-    public ServiceJdbcException(String message){
+    public ServiceJdbcException(String message) {
         super(message);
     }
-    public ServiceJdbcException(String message, Throwable cause){
-        super(message,cause);
+
+    public ServiceJdbcException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

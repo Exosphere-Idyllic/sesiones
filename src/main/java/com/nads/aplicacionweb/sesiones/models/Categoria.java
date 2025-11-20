@@ -1,49 +1,49 @@
 package com.nads.aplicacionweb.sesiones.models;
 
 public class Categoria {
-    private int id;
-    private String descripcion;
+    private Long id;
     private String nombreCategoria;
+    private String descripcion;
     private int condicion;
 
-
-    public Categoria(){
-
+    public Categoria() {
     }
 
-    public Categoria(int id, String descripcion, String nombreCategoria, int condicion) {
+    public Categoria(Long id, String nombreCategoria, String descripcion, int condicion) {
         this.id = id;
-        this.descripcion = descripcion;
         this.nombreCategoria = nombreCategoria;
+        this.descripcion = descripcion;
         this.condicion = condicion;
     }
 
-    public int getId() {
+    // GETTERS Y SETTERS
+
+    public Long getId() {
         return id;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombreCategoria() {
         return nombreCategoria;
     }
 
-    public int getCondicion() {
-        return condicion;
+    public void setNombreCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
-    public void setNombreCategoria(String nombreCategoria) {
-        this.nombreCategoria = nombreCategoria;
+    public int getCondicion() {
+        return condicion;
     }
 
     public void setCondicion(int condicion) {

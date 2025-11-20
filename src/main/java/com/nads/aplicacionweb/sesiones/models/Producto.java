@@ -2,50 +2,43 @@ package com.nads.aplicacionweb.sesiones.models;
 
 import java.util.Date;
 
-/**
- * ============================================
- * MODELO DE PRODUCTO
- * ============================================
- * Descripción: Representa un producto del sistema
- * con todos sus atributos según la BD
- * Autor: Pablo Aguilar
- * Fecha: 18/11/2025
- * ============================================
- */
 public class Producto {
-
-    private int id;
+    private Long id;
     private String nombreProducto;
-    private int idCategoria;
+    private Long idCategoria;
     private String nombreCategoria; // Para joins
     private int stock;
     private double precio;
     private String descripcion;
     private String codigo;
-    private Date fechaElaboracion;
-    private Date fechaCaducidad;
+    private Date fechaElaboracion;  // Coincide con fecha_elaboracion
+    private Date fechaCaducidad;    // Coincide con fecha_caducidad
     private int condicion;
 
     // ========================================
     // CONSTRUCTORES
     // ========================================
 
-    /**
-     * Constructor vacío
-     */
     public Producto() {
     }
 
-
-
-    /**
-     * Constructor completo
-     */
-    public Producto(int id, String nombreProducto, int stock, double precio, String descripcion, String codigo, Date fechaElaboracion, Date fechaCaducidad, int condicion) {
+    // Constructor para compatibilidad con código anterior
+    public Producto(Long id, String nombreProducto, String tipo, double precio) {
         this.id = id;
         this.nombreProducto = nombreProducto;
-        Categoria categoria = new Categoria();
-        Categoria.setNombreCategoria(idCategoria);
+        this.descripcion = tipo;
+        this.precio = precio;
+        this.condicion = 1;
+    }
+
+    // Constructor completo
+    public Producto(Long id, String nombreProducto, Long idCategoria, String nombreCategoria,
+                    int stock, double precio, String descripcion, String codigo,
+                    Date fechaElaboracion, Date fechaCaducidad, int condicion) {
+        this.id = id;
+        this.nombreProducto = nombreProducto;
+        this.idCategoria = idCategoria;
+        this.nombreCategoria = nombreCategoria;
         this.stock = stock;
         this.precio = precio;
         this.descripcion = descripcion;
@@ -59,91 +52,101 @@ public class Producto {
     // GETTERS Y SETTERS
     // ========================================
 
-    public int getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombreProducto() {
         return nombreProducto;
     }
 
-    public int getIdCategoria() {
-        return idCategoria;
-    }
-
-    public String getNombreCategoria() {
-        return nombreCategoria;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public double getPrecio() {
-        return precio;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public Date getFechaElaboracion() {
-        return fechaElaboracion;
-    }
-
-    public Date getFechaCaducidad() {
-        return fechaCaducidad;
-    }
-
-    public int getCondicion() {
-        return condicion;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    // Método para compatibilidad con código anterior
+    public String getNombre() {
+        return nombreProducto;
     }
 
     public void setNombreProducto(String nombreProducto) {
         this.nombreProducto = nombreProducto;
     }
 
-    public void setIdCategoria(int idCategoria) {
+    public Long getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Long idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    public String getNombreCategoria() {
+        return nombreCategoria;
+    }
+
+    // Método para compatibilidad con código anterior
+    public String getTipo() {
+        return nombreCategoria != null ? nombreCategoria : descripcion;
     }
 
     public void setNombreCategoria(String nombreCategoria) {
         this.nombreCategoria = nombreCategoria;
     }
 
+    public int getStock() {
+        return stock;
+    }
+
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public double getPrecio() {
+        return precio;
     }
 
     public void setPrecio(double precio) {
         this.precio = precio;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getCodigo() {
+        return codigo;
     }
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
+    public Date getFechaElaboracion() {
+        return fechaElaboracion;
+    }
+
     public void setFechaElaboracion(Date fechaElaboracion) {
         this.fechaElaboracion = fechaElaboracion;
+    }
+
+    public Date getFechaCaducidad() {
+        return fechaCaducidad;
     }
 
     public void setFechaCaducidad(Date fechaCaducidad) {
         this.fechaCaducidad = fechaCaducidad;
     }
 
+    public int getCondicion() {
+        return condicion;
+    }
+
     public void setCondicion(int condicion) {
         this.condicion = condicion;
     }
-    }
+}
