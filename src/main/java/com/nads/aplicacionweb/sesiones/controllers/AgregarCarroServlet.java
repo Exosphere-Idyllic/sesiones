@@ -19,7 +19,7 @@ import java.io.IOException;
  * SERVLET PARA AGREGAR PRODUCTOS AL CARRITO
  * ============================================
  * Descripción: Agrega productos al carrito de compras
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 14/11/2025
  * ============================================
  */

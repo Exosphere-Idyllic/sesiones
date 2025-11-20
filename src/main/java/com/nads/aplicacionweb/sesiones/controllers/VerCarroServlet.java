@@ -12,7 +12,7 @@ import java.io.IOException;
  * SERVLET PARA VER EL CARRITO
  * ============================================
  * Descripción: Redirige a la página JSP del carrito de compras
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 14/11/2025
  * ============================================
  */

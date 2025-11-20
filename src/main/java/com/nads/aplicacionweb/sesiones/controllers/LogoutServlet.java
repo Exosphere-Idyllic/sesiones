@@ -16,7 +16,7 @@ import java.util.Optional;
  * SERVLET DE LOGOUT
  * ============================================
  * Descripción: Cierra la sesión del usuario
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 14/11/2025
  * ============================================
  */

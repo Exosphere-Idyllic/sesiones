@@ -23,7 +23,7 @@ import java.util.Optional;
  * SERVLET DE PRODUCTOS
  * ============================================
  * Descripción: Muestra el listado de productos disponibles
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 14/11/2025
  * ============================================
  */

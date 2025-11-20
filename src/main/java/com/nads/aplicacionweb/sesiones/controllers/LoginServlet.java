@@ -16,7 +16,7 @@ import java.util.Optional;
  * SERVLET DE LOGIN
  * ============================================
  * Descripción: Maneja la autenticación de usuarios
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 14/11/2025
  * ============================================
  */
