@@ -18,11 +18,20 @@ import java.util.Optional;
 
 /**
  * ============================================
- * SERVLET PARA AGREGAR PRODUCTOS AL CARRITO
+ * AGREGAR CARRO SERVLET
  * ============================================
- * Descripción: Agrega productos al carrito desde BD
- * Autor: Sistema
- * Fecha: 20/11/2025
+ * Descripción: Agrega productos al carrito y
+ * DESCUENTA el stock inmediatamente de la BD
+ *
+ * FLUJO:
+ * 1. Verificar autenticación
+ * 2. Obtener producto de BD
+ * 3. Validar stock disponible
+ * 4. Descontar stock en BD
+ * 5. Agregar al carrito en sesión
+ *
+ * Autor: Pablo Aguilar
+ * Fecha: 21/11/2025
  * ============================================
  */
 @WebServlet("/agregar-carro")
@@ -33,18 +42,20 @@ public class AgregarCarroServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // Verificar que el usuario esté autenticado
+            // ========================================
+            // 1. VERIFICAR AUTENTICACIÓN
+            // ========================================
             HttpSession session = req.getSession(false);
             if (session == null || session.getAttribute("username") == null) {
-                // Redirigir al login si no está autenticado
                 resp.sendRedirect(req.getContextPath() + "/login");
                 return;
             }
 
-            // Obtener los parámetros de la solicitud
+            // ========================================
+            // 2. CAPTURAR Y VALIDAR PARÁMETROS
+            // ========================================
             Long id = Long.parseLong(req.getParameter("id"));
 
-            // Validar y obtener la cantidad
             int cantidad = 1;
             String cantidadParam = req.getParameter("cantidad");
             if (cantidadParam != null && !cantidadParam.trim().isEmpty()) {
@@ -56,26 +67,35 @@ public class AgregarCarroServlet extends HttpServlet {
                 cantidad = 1;
             }
 
-            // Obtener la conexión desde el filtro
+            // ========================================
+            // 3. OBTENER CONEXIÓN Y SERVICIO
+            // ========================================
             Connection conn = (Connection) req.getAttribute("conn");
-
-            // Buscar el producto en la base de datos
             ProductoService productoService = new ProductoServiceJdbcImplement(conn);
+
+            // ========================================
+            // 4. BUSCAR PRODUCTO EN BASE DE DATOS
+            // ========================================
             Optional<Producto> productoOpt = productoService.porId(id);
 
             if (productoOpt.isPresent()) {
                 Producto producto = productoOpt.get();
 
-                // Verificar que haya stock suficiente
+                // ========================================
+                // 5. VERIFICAR STOCK DISPONIBLE
+                // ========================================
                 if (producto.getStock() < cantidad) {
-                    // Stock insuficiente
-                    req.getSession().setAttribute("error",
-                            "Stock insuficiente. Solo hay " + producto.getStock() + " unidades disponibles");
+                    // No hay stock suficiente
+                    session.setAttribute("error",
+                            "Stock insuficiente. Solo hay " + producto.getStock() +
+                                    " unidad(es) disponible(s)");
                     resp.sendRedirect(req.getContextPath() + "/products");
                     return;
                 }
 
-                // Obtener el carrito de la sesión o crear uno nuevo
+                // ========================================
+                // 6. OBTENER O CREAR CARRITO
+                // ========================================
                 DetalleCarro carro = (DetalleCarro) session.getAttribute("carro");
 
                 if (carro == null) {
@@ -83,36 +103,83 @@ public class AgregarCarroServlet extends HttpServlet {
                     session.setAttribute("carro", carro);
                 }
 
-                // Crear el item del carrito con el producto y la cantidad
-                ItemCarro item = new ItemCarro(cantidad, producto);
+                // ========================================
+                // 7. VERIFICAR SI EL PRODUCTO YA ESTÁ EN EL CARRITO
+                // ========================================
+                ItemCarro itemExistente = carro.buscarItem(id);
 
-                // Agregar el item al carrito
+                if (itemExistente != null) {
+                    // El producto YA está en el carrito
+                    // Verificar si hay stock para la cantidad adicional
+
+                    // IMPORTANTE: El stock actual en BD ya fue descontado
+                    // por la cantidad que está en el carrito
+                    if (producto.getStock() < cantidad) {
+                        session.setAttribute("error",
+                                "Ya tienes " + itemExistente.getCantidad() +
+                                        " en el carrito. Solo hay " + producto.getStock() +
+                                        " unidad(es) adicional(es) disponible(s)");
+                        resp.sendRedirect(req.getContextPath() + "/ver-carro");
+                        return;
+                    }
+                }
+
+                // ========================================
+                // 8. DESCONTAR STOCK EN LA BASE DE DATOS
+                // ========================================
+                try {
+                    productoService.descontarStock(id, cantidad);
+
+                    // Log para debugging
+                    System.out.println("[STOCK DESCONTADO] Producto ID: " + id +
+                            " | Stock anterior: " + producto.getStock() +
+                            " | Cantidad descontada: " + cantidad +
+                            " | Nuevo stock: " + (producto.getStock() - cantidad));
+
+                } catch (Exception e) {
+                    // Error al descontar stock (ej: stock insuficiente por concurrencia)
+                    session.setAttribute("error",
+                            "Error al descontar stock: " + e.getMessage());
+                    resp.sendRedirect(req.getContextPath() + "/products");
+                    return;
+                }
+
+                // ========================================
+                // 9. ACTUALIZAR STOCK DEL PRODUCTO EN MEMORIA
+                // ========================================
+                // Esto actualiza el objeto en memoria, NO la BD
+                producto.setStock(producto.getStock() - cantidad);
+
+                // ========================================
+                // 10. CREAR ITEM Y AGREGAR AL CARRITO
+                // ========================================
+                ItemCarro item = new ItemCarro(cantidad, producto);
                 carro.addItemCarro(item);
 
-                // Mensaje de éxito
+                // ========================================
+                // 11. MENSAJE DE ÉXITO
+                // ========================================
                 session.setAttribute("mensaje",
-                        "Producto agregado al carrito exitosamente");
+                        "✓ Producto agregado al carrito. Stock actualizado.");
+
             } else {
                 // Producto no encontrado
-                req.getSession().setAttribute("error",
-                        "Producto no encontrado");
+                session.setAttribute("error", "Producto no encontrado");
             }
 
-            // Redirigir a la vista del carrito
+            // ========================================
+            // 12. REDIRIGIR AL CARRITO
+            // ========================================
             resp.sendRedirect(req.getContextPath() + "/ver-carro");
 
         } catch (NumberFormatException e) {
-            // Error al parsear parámetros
-            System.err.println("Error al parsear parámetros: " + e.getMessage());
-            req.getSession().setAttribute("error",
-                    "Parámetros inválidos");
+            req.getSession().setAttribute("error", "Parámetros inválidos");
             resp.sendRedirect(req.getContextPath() + "/products");
         } catch (Exception e) {
-            // Error general
             System.err.println("Error al agregar producto al carrito: " + e.getMessage());
             e.printStackTrace();
             req.getSession().setAttribute("error",
-                    "Error al agregar producto al carrito");
+                    "Error al procesar la solicitud");
             resp.sendRedirect(req.getContextPath() + "/products");
         }
     }

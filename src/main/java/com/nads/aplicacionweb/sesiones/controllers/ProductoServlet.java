@@ -19,7 +19,7 @@ import java.util.List;
  * ============================================
  * Descripción: Obtiene productos de BD y los
  * envía a la vista JSP
- * Autor: Sistema
+ * Autor: Pablo Aguilar
  * Fecha: 20/11/2025
  * ============================================
  */
