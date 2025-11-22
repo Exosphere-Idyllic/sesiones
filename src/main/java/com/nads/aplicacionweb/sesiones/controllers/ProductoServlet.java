@@ -30,19 +30,37 @@ public class ProductoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        System.out.println("=== PRODUCTOS SERVLET INICIADO ===");
+
         // Obtener la conexión desde el filtro
         Connection conn = (Connection) req.getAttribute("conn");
+        System.out.println("Conexión obtenida: " + (conn != null));
 
-        // Crear el servicio con la conexión
-        ProductoService service = new ProductoServiceJdbcImplement(conn);
+        if (conn == null) {
+            System.err.println("ERROR: La conexión es nula. Verificar el filtro de conexión.");
+            req.setAttribute("error", "Error de conexión a la base de datos");
+        } else {
+            try {
+                // Crear el servicio con la conexión
+                ProductoService service = new ProductoServiceJdbcImplement(conn);
 
-        // Obtener la lista de productos desde la base de datos
-        List<Producto> productos = service.listar();
+                // Obtener la lista de productos desde la base de datos
+                List<Producto> productos = service.listar();
 
-        // Pasar los productos como atributo al JSP
-        req.setAttribute("productos", productos);
+                System.out.println("Productos obtenidos en servlet: " + productos.size());
+
+                // Pasar los productos como atributo al JSP
+                req.setAttribute("productos", productos);
+
+            } catch (Exception e) {
+                System.err.println("ERROR en servlet: " + e.getMessage());
+                e.printStackTrace();
+                req.setAttribute("error", "Error al cargar productos: " + e.getMessage());
+            }
+        }
 
         // Forward a la vista JSP
+        System.out.println("Forward a productos.jsp");
         getServletContext()
                 .getRequestDispatcher("/productos.jsp")
                 .forward(req, resp);
